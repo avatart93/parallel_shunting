@@ -24,10 +24,10 @@ def test_multiply():
 
 
 def test_divide():
-    assert operations.divide(2, 1) == 2
-    assert operations.divide(0, 2) == 0
-    assert operations.divide(1, -2) == -1
-    assert operations.divide(4, 3) == 1
+    assert operations.divide(2, 1) - 2 < 1e-2
+    assert operations.divide(0, 2) - 0 < 1e-2
+    assert operations.divide(1, -2) - -0.5 < 1e-2
+    assert operations.divide(4, 3) - 1.33 < 1e-2
 
 
 def main():
