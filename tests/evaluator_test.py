@@ -2,6 +2,9 @@
 from src import evaluator
 
 
+ERROR_THRESHOLD = 1e-3
+
+
 def test_shunting_yard():
 
     case_1 = "38 - 83 - 52 + 30 - 24 - 89 / 66 + 18 / 7 * 77"
@@ -20,21 +23,21 @@ def test_shunting_yard():
     case_14 = "58 * 10 - 19 - 59"
     case_15 = "63 / 68 * 86 - 62 - 32"
 
-    assert evaluator.shunting_yard(case_1) == eval(case_1)
-    assert evaluator.shunting_yard(case_2) == eval(case_2)
-    assert evaluator.shunting_yard(case_3) == eval(case_3)
-    assert evaluator.shunting_yard(case_4) == eval(case_4)
-    assert evaluator.shunting_yard(case_5) == eval(case_5)
-    assert evaluator.shunting_yard(case_6) == eval(case_6)
-    assert evaluator.shunting_yard(case_7) == eval(case_7)
-    assert evaluator.shunting_yard(case_8) == eval(case_8)
-    assert evaluator.shunting_yard(case_9) == eval(case_9)
-    assert evaluator.shunting_yard(case_10) == eval(case_10)
-    assert evaluator.shunting_yard(case_11) == eval(case_11)
-    assert evaluator.shunting_yard(case_12) == eval(case_12)
-    assert evaluator.shunting_yard(case_13) == eval(case_13)
-    assert evaluator.shunting_yard(case_14) == eval(case_14)
-    assert evaluator.shunting_yard(case_15) == eval(case_15)
+    assert evaluator.shunting_yard(case_1) - eval(case_1) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_2) - eval(case_2) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_3) - eval(case_3) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_4) - eval(case_4) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_5) - eval(case_5) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_6) - eval(case_6) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_7) - eval(case_7) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_8) - eval(case_8) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_9) - eval(case_9) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_10) - eval(case_10) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_11) - eval(case_11) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_12) - eval(case_12) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_13) - eval(case_13) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_14) - eval(case_14) < ERROR_THRESHOLD
+    assert evaluator.shunting_yard(case_15) - eval(case_15) < ERROR_THRESHOLD
 
 
 def main():
