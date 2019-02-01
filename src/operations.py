@@ -1,5 +1,5 @@
 
-# This operations will be used to avoid the usage of 'eval' by the Shunting Yard Algorithm.
+# This operations will be used to avoid the usage of 'eval' by the Shunting Yard algorithm.
 
 
 def get_math_func(operator):

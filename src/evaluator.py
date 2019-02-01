@@ -45,6 +45,7 @@ def shunting_yard(expression_string):
     """ Receives a mathematical expressions as a string and solves it using stacks to rearrange the
     order of the operations. """
 
+    # Cleans and verify the expression.
     expression_string = expression_string.replace(' ', '')
     if not is_correct_expression(expression_string):
         print("Invalid expression: {0}.".format(expression_string))
@@ -53,6 +54,7 @@ def shunting_yard(expression_string):
     numbers_stack = []
     operators_stack = []
 
+    # Finds and separates into items all numbers and operators.
     tokens = re.findall("\d+|[+\-*/]", expression_string)
     for token in tokens:
 
@@ -64,12 +66,14 @@ def shunting_yard(expression_string):
         else:  # Operator
             current_operator = token
 
+            # Computes all operations pending with greater precedence.
             while len(operators_stack) > 0 and precedes(operators_stack[-1], current_operator):
                 compute_one_operation(numbers_stack, operators_stack)
 
             operators_stack.append(current_operator)
 
+    # Compute all the operations pending, now in postfix order.
     while len(operators_stack) > 0:
         compute_one_operation(numbers_stack, operators_stack)
 
-    return numbers_stack[0]
+    return numbers_stack.pop()  # The last number in the stack, hence our answer.
