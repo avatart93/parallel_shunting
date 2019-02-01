@@ -1,4 +1,6 @@
 
+# This operations will be used to avoid the usage of 'eval' by the Shunting Yard Algorithm.
+
 
 def add(a, b):
     """ Returns the result of adding the parameters. """
