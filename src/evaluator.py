@@ -28,22 +28,21 @@ def is_correct_expression(expression_string):
     return re.fullmatch("(\d+[+\-*/])+\d+", expression_string) is not None
 
 
-def compute_one_operation(numbers_stack, operators_stack):
-    """ Will extract one operator, compute it over the last two numbers and append the result. """
-
-    operator = operators_stack.pop()
-
-    right_operand = numbers_stack.pop()
-    left_operand = numbers_stack.pop()
-
-    math_func = operations.get_math_func(operator)
-    result = math_func(left_operand, right_operand)
-    numbers_stack.append(result)
-
-
 def shunting_yard(expression_string):
     """ Receives a mathematical expressions as a string and solves it using stacks to rearrange the
     order of the operations. """
+
+    def compute_one_operation(numbers_stack, operators_stack):
+        """ Will extract one operator, compute it over the last two numbers and append the result. """
+
+        operator = operators_stack.pop()
+
+        right_operand = numbers_stack.pop()
+        left_operand = numbers_stack.pop()
+
+        math_func = operations.get_math_func(operator)
+        result = math_func(left_operand, right_operand)
+        numbers_stack.append(result)
 
     # Cleans and verify the expression.
     expression_string = expression_string.replace(' ', '')
