@@ -6,6 +6,8 @@ ERROR_THRESHOLD = 1e-3
 
 
 def test_add():
+    """ Tests the add operation, will raise an exception if any of the test cases fails. """
+
     assert operations.add(1, 2) - 3 < ERROR_THRESHOLD
     assert operations.add(-1, 2) - 1 < ERROR_THRESHOLD
     assert operations.add(-1, -2) - -3 < ERROR_THRESHOLD
@@ -13,6 +15,8 @@ def test_add():
 
 
 def test_subtract():
+    """ Tests the subtract operation, will raise an exception if any of the test cases fails. """
+
     assert operations.subtract(1, 2) - -1 < ERROR_THRESHOLD
     assert operations.subtract(-1, 2) - -3 < ERROR_THRESHOLD
     assert operations.subtract(-1, -2) - 1 < ERROR_THRESHOLD
@@ -20,6 +24,8 @@ def test_subtract():
 
 
 def test_multiply():
+    """ Tests the multiply operation, will raise an exception if any of the test cases fails. """
+
     assert operations.multiply(1, 2) - 2 < ERROR_THRESHOLD
     assert operations.multiply(-1, 2) - -2 < ERROR_THRESHOLD
     assert operations.multiply(-1, -2) - 2 < ERROR_THRESHOLD
@@ -27,6 +33,8 @@ def test_multiply():
 
 
 def test_divide():
+    """ Tests the divide operation, will raise an exception if any of the test cases fails. """
+
     assert operations.divide(2, 1) - 2 < ERROR_THRESHOLD
     assert operations.divide(0, 2) - 0 < ERROR_THRESHOLD
     assert operations.divide(1, -2) - -0.5 < ERROR_THRESHOLD

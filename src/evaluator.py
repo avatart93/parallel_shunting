@@ -44,11 +44,9 @@ def shunting_yard(expression_string):
         result = math_func(left_operand, right_operand)
         numbers_stack.append(result)
 
-    # Cleans and verify the expression.
-    expression_string = expression_string.replace(' ', '')
+    # Verify the expression.
     if not is_correct_expression(expression_string):
-        print("Invalid expression: {0}.".format(expression_string))
-        return None
+        return "Invalid expression: {0}.".format(expression_string)
 
     numbers_stack = []
     operators_stack = []

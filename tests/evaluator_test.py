@@ -6,6 +6,7 @@ ERROR_THRESHOLD = 1e-3
 
 
 def test_shunting_yard():
+    """ Tests the shunting yard algorithm, will raise an exception if any of the test cases fails. """
 
     case_1 = "38 - 83 - 52 + 30 - 24 - 89 / 66 + 18 / 7 * 77"
     case_2 = "57 + 87 - 24 * 27 / 8 + 53 - 87 * 6 * 60 - 30"
