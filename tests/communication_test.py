@@ -1,13 +1,13 @@
 
-
 from src import evaluator
 from src import client
 from src import server
 
 
 EXPRESSIONS_PATH = "../data/test/communication_in.txt"
-LOGS_PATH = "../data/test/communication_tmp.txt"
+RESULTS_PATH = "../data/test/communication_tmp.txt"
 TEMPLATE_PATH = "../data/test/communication_out.txt"
+CONNECTION_LOGS_DIR = "../data/logs/"
 
 
 def test_asynchronous_communication():
@@ -17,24 +17,29 @@ def test_asynchronous_communication():
 
     # Serve the shunting yard function.
     server_instance = server.Server()
-    server_instance.launch(evaluator.shunting_yard)
+    answer = server_instance.launch(evaluator.shunting_yard, CONNECTION_LOGS_DIR)
+    if answer is not None:
+        return answer
 
     # Establish communication with the server.
     client_instance = client.Client()
-    client_instance.open_channel()
+    answer = client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR, verbose=False)
+    if answer is not None:
+        server_instance.kill()
+        return answer
 
-    answer = client_instance.process_batch(EXPRESSIONS_PATH, LOGS_PATH, False)
+    answer = client_instance.process_batch(EXPRESSIONS_PATH, RESULTS_PATH, False)
 
     # Close communication by both sides.
     client_instance.close_channel()
     server_instance.kill()
 
-    # Bypass errors after closing connections.
+    # Verify after closing connections cause I had to close them either way.
     if answer is not None:
         return answer
 
-    logs_fd = open(LOGS_PATH)
-    template_fd = open(TEMPLATE_PATH)
+    logs_fd = open(RESULTS_PATH, 'r')
+    template_fd = open(TEMPLATE_PATH, 'r')
 
     # If last position didn't changed means we reach EOF.
     last_position = None
