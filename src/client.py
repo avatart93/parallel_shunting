@@ -1,6 +1,11 @@
 
+import socket
 
 from src import evaluator
+
+
+HOST = '127.0.0.1'  # The server's IP address.
+PORT = 65432  # The server's port.
 
 
 def process_operations_batch(in_path, out_path=None, verbose=True):
@@ -38,3 +43,26 @@ def process_operations_batch(in_path, out_path=None, verbose=True):
     operations_fd.close()
     if logs_fd is not None:
         logs_fd.close()
+
+
+def client():
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as channel:
+        channel.connect((HOST, PORT))
+
+        while True:
+
+            channel.send("Hello world!".encode())
+            data = channel.recv(1024)
+
+            print("Received {0}".format(data.decode()))
+
+
+def main():
+
+    client()
+
+
+if __name__ == "__main__":
+
+    main()
