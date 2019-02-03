@@ -2,7 +2,8 @@
 import socket
 
 
-EXPRESSIONS_PATH = "../data/test/communication_in.txt"
+DEFAULT_INPUT_PATH = "../data/src/operations.txt"
+DEFAULT_OUTPUT_PATH = "../data/src/results.txt"
 
 
 class Client:
@@ -12,15 +13,18 @@ class Client:
         self._channel = None
 
     def open_channel(self, host='127.0.0.1', port=65432):
+        """ Creates a socket and connects it to the server at 'host':'port'. """
 
         self._channel = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._channel.connect((host, port))
 
     def close_channel(self):
+        """ Closes the connection to the server. """
 
         self._channel.close()
 
     def exchange(self, data):
+        """ Sends data to be processed by the server. """
 
         self._channel.send(str(data).encode())
         data = self._channel.recv(1024)
@@ -61,3 +65,22 @@ class Client:
         operations_fd.close()
         if logs_fd is not None:
             logs_fd.close()
+
+
+def main():
+
+    # Compute math expressions in operations.txt (default configuration)
+
+    client_instance = Client()
+    client_instance.open_channel()
+
+    client_instance.process_batch(DEFAULT_INPUT_PATH, DEFAULT_OUTPUT_PATH, False)
+
+    client_instance.close_channel()
+
+    print("Computations finished.")
+
+
+if __name__ == "__main__":
+
+    main()

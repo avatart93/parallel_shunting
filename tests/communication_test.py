@@ -11,19 +11,23 @@ TEMPLATE_PATH = "../data/test/communication_out.txt"
 
 
 def test_asynchronous_communication():
-    """ Tests the communication between the client and server comparing the log file produced with an
-     expected template, will raise an exception if any differences are detected. This test only works
+    """ Tests the communication between the client and server by comparing the log file produced with
+     an expected template. Will raise an exception if any differences are detected. This test only works
       when working asynchronously (no children in server). """
 
-    server.Server.launch(evaluator.shunting_yard)  # Serve the shunting yard function.
+    # Serve the shunting yard function.
+    server_instance = server.Server()
+    server_instance.launch(evaluator.shunting_yard)
 
-    # Instance and connect the client.
+    # Establish communication with the server.
     client_instance = client.Client()
     client_instance.open_channel()
 
-    client_instance.process_batch(EXPRESSIONS_PATH, LOGS_PATH, True)
+    client_instance.process_batch(EXPRESSIONS_PATH, LOGS_PATH, False)
 
+    # Close communication by both sides.
     client_instance.close_channel()
+    server_instance.kill()
 
     logs_fd = open(LOGS_PATH)
     template_fd = open(TEMPLATE_PATH)
@@ -49,7 +53,7 @@ def main():
     test_asynchronous_communication()
 
     print()
-    print("Operations batch computed.")
+    print("Operations batch computed correctly.")
 
 
 if __name__ == "__main__":
