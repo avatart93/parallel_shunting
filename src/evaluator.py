@@ -32,13 +32,13 @@ def shunting_yard(expression_string):
     """ Receives a mathematical expressions as a string and solves it using stacks to rearrange the
     order of the operations. """
 
-    def compute_one_operation(numbers_stack, operators_stack):
+    def compute_one_operation(numbers, operators):
         """ Will extract one operator, compute it over the last two numbers and append the result. """
 
-        operator = operators_stack.pop()
+        operator = operators.pop()
 
-        right_operand = numbers_stack.pop()
-        left_operand = numbers_stack.pop()
+        right_operand = numbers.pop()
+        left_operand = numbers.pop()
 
         math_func = operations.get_math_func(operator)
         result = math_func(left_operand, right_operand)

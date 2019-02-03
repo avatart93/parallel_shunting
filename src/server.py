@@ -1,32 +1,34 @@
 
 
+import multiprocessing
 import socket
 
 
-HOST = '127.0.0.1'  # Localhost.
-PORT = 65432  # Port to listen on.
+class Server:
 
+    @staticmethod
+    def launch(func, daemon=True):
 
-def server():
+        server = multiprocessing.Process(name='server', target=Server.serve, args=[func])
+        server.daemon = daemon
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as channel:
-        channel.bind((HOST, PORT))
-        channel.listen(3)
+        server.start()
+        print("Server started with pid = {0}.".format(server.pid))
 
-        connection, address = channel.accept()
-        print("Connected by {0}".format(address))
+    @staticmethod
+    def serve(func, port=65432):
 
-        while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as channel:
+            channel.bind(('127.0.0.1', port))
+            channel.listen(3)
 
-            data = connection.recv(1024)
-            connection.send(data)
+            connection, address = channel.accept()
+            print("Connected by {0}".format(address))
 
+            while True:
 
-def main():
-
-    server()
-
-
-if __name__ == "__main__":
-
-    main()
+                data = connection.recv(1024).decode()
+                if not data:
+                    break
+                result = str(func(data))
+                connection.send(result.encode())
