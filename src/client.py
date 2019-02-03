@@ -1,5 +1,6 @@
 
 import socket
+import os
 
 
 DEFAULT_INPUT_PATH = "../data/src/operations.txt"
@@ -31,9 +32,20 @@ class Client:
         return data.decode()
 
     def process_batch(self, in_path, out_path=None, verbose=True):
-        """ Receives a file pointed by 'in_path' containing math expressions and computes the result for
-         each one. Can save the results in a file pointed by 'out_path' if one is given. If 'verbose',
-          the results will be printed out, regardless of the presence of an 'out_path'. """
+        """ Receives a file pointed by 'in_path' containing lines of data and sends each one to the
+        server. Can save each answer from the server in a file pointed by 'out_path' if one is given.
+         If 'verbose', the results will be printed out, independent of the presence of an 'out_path'. """
+
+        # Verify that in_path points to a file.
+        if not os.path.isfile(in_path):
+            print("Wrong 'in_path' provided, can't find the directory, please verify these and try again.")
+            return "Invalid 'in_path'."
+
+        # Verify that out_path belongs to an existing directory.
+        out_path_dir = os.path.split(out_path)[0]
+        if not os.path.isdir(out_path_dir):
+            print("Wrong 'out_path' provided, can't find the directory, please verify these and try again.")
+            return "Invalid 'out_path'."
 
         operations_fd = open(in_path)
         logs_fd = open(out_path, 'w') if out_path is not None else None

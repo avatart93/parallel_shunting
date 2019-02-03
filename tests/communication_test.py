@@ -23,11 +23,15 @@ def test_asynchronous_communication():
     client_instance = client.Client()
     client_instance.open_channel()
 
-    client_instance.process_batch(EXPRESSIONS_PATH, LOGS_PATH, False)
+    answer = client_instance.process_batch(EXPRESSIONS_PATH, LOGS_PATH, False)
 
     # Close communication by both sides.
     client_instance.close_channel()
     server_instance.kill()
+
+    # Bypass errors after closing connections.
+    if answer is not None:
+        return answer
 
     logs_fd = open(LOGS_PATH)
     template_fd = open(TEMPLATE_PATH)
@@ -50,10 +54,12 @@ def test_asynchronous_communication():
 
 def main():
 
-    test_asynchronous_communication()
+    answer = test_asynchronous_communication()
 
-    print()
-    print("Operations batch computed correctly.")
+    if answer is None:
+        print("Operations batch computed correctly.")
+    else:
+        print("Error detected: {0}".format(answer))
 
 
 if __name__ == "__main__":
