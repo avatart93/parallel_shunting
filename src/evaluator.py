@@ -46,7 +46,7 @@ def shunting_yard(expression_string):
 
     # Verify the expression.
     if not is_correct_expression(expression_string):
-        return "Invalid expression: {0}.".format(expression_string)
+        return "Invalid expression"
 
     numbers_stack = []
     operators_stack = []
