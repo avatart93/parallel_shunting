@@ -59,8 +59,8 @@ class Client:
     def exchange(self, data):
         """ Sends data to be processed by the server and returns its answer. """
 
-        self._channel.send(str(data).encode())
-        answer = self._channel.recv(1024).decode()
+        self._channel.sendall(str(data).encode())
+        answer = self._channel.recv(4096).decode()
 
         # Log exchange between client and server.
         if self._log_exchange:
@@ -104,8 +104,7 @@ class Client:
             answer = self.exchange(line)
 
             # Show or store results obtained according to the user's preferences.
-            message = "{0}={1}".format(line, answer)
-            tools.manage_message(out_fd, verbose, message, False)
+            tools.manage_message(out_fd, verbose, answer, False)
 
         # Always close file descriptors.
         if out_fd is not None:

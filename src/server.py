@@ -4,6 +4,7 @@ import socket
 import time
 
 from src import tools
+from src import children
 
 
 CONNECTION_LOGS_DIR = "../data/logs/"
@@ -15,8 +16,9 @@ class Server:
 
         self._server = None
 
-    def launch(self, func, logs_path=None, verbose=False, log_exchange=True):
-        """ Creates a daemon process to serve the 'func' and starts it. """
+    def launch(self, func, logs_path=None, verbose=False, log_exchange=True, children_count=5):
+        """ Creates a daemon process to serve the 'func' and starts it. It will create 'children'
+         processes to fulfill request. """
 
         # Define log file path for server with unique name.
         date_time_stamp = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -29,16 +31,17 @@ class Server:
 
         # Hosts the serve function and passes func as its parameter.
         self._server = multiprocessing.Process(name='server',
-                                               target=Server.serve,
-                                               args=[func, logs_path, verbose, log_exchange])
-        self._server.daemon = True
+                                               target=Server._serve,
+                                               args=[func, logs_path, verbose, log_exchange, children_count])
         self._server.start()
 
     @staticmethod
-    def serve(func, logs_path, verbose, log_exchange, port=65432):
+    def _serve(func, logs_path, verbose, log_exchange, children_count, port=65432):
         """ This function is launched in a daemon process and serves the 'func' provided. Any data
          received by the server will be passed as a parameter to 'func' and the result will be then
           return to the client. """
+
+        children_handler = children.ChildrenHandler(children_count, func)
 
         # Open a file descriptor for logs if one was provided.
         server_log_fd = open(logs_path, 'w') if logs_path is not None else None
@@ -60,9 +63,8 @@ class Server:
                 tools.manage_message(server_log_fd, verbose, "Connected by {0}.".format(address))
 
                 while True:
-
                     # Fulfill all the requests until connection is closed by the client.
-                    data = connection.recv(1024).decode()
+                    data = connection.recv(4096).decode()
 
                     # Client closed connection, logged too.
                     if not data:
@@ -71,8 +73,15 @@ class Server:
                             server_log_fd.flush()
                         break
 
-                    result = str(func(data))
-                    connection.send(result.encode())
+                    if children_handler.can_send():
+                        children_handler.send(data)
+
+                    # TODO: Achieve asynchronous work.
+                    while not children_handler.can_receive():
+                        children_handler.update_receiving()
+
+                    result = children_handler.receive()
+                    connection.sendall(result.encode())
 
                     # Log exchange between client and server.
                     if log_exchange:
