@@ -18,7 +18,7 @@ class Server:
         self._server = None
 
     def launch(self, func, logs_path=None, verbose=False, log_exchange=True, children_count=5):
-        """ Creates a daemon process to serve the 'func' and starts it. It will create 'children'
+        """ Creates a process to serve the 'func' and starts it. It will create 'children'
          processes to fulfill request. """
 
         # Define log file path for server with unique name.
@@ -38,7 +38,7 @@ class Server:
 
     @staticmethod
     def _serve(func, logs_path, verbose, log_exchange, children_count, port=65432):
-        """ This function is launched in a daemon process and serves the 'func' provided. Any data
+        """ This function is launched in a different process and serves the 'func' provided. Any data
          received by the server will be passed as a parameter to 'func' and the result will be then
           return to the client. """
 
