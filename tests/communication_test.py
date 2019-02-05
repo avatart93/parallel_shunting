@@ -1,5 +1,7 @@
 
 import os
+import time
+import random
 
 from src import evaluator
 from src import client
@@ -11,6 +13,16 @@ RESULTS_PATH = "../data/test/communication_tmp.txt"
 TEMPLATE_PATH = "../data/test/communication_out.txt"
 CONNECTION_LOGS_DIR = "../data/logs/"
 
+MAX_DELAYED_SECONDS = 1
+
+
+def delayed_shunting_yard(expression):
+    """ Adds some sleep time to really test the asynchronous work. """
+
+    time.sleep(random.random() * MAX_DELAYED_SECONDS)
+
+    return evaluator.shunting_yard(expression)
+
 
 def test_asynchronous_communication():
     """ Tests the communication between the client and server by comparing the log file produced with
@@ -19,13 +31,13 @@ def test_asynchronous_communication():
 
     # Serve the shunting yard function.
     server_instance = server.Server()
-    answer = server_instance.launch(evaluator.shunting_yard, CONNECTION_LOGS_DIR)
+    answer = server_instance.launch(delayed_shunting_yard)
     if answer is not None:
         return answer
 
     # Establish communication with the server.
     client_instance = client.Client()
-    answer = client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR, verbose=False)
+    answer = client_instance.open_channel()
     if answer is not None:
         server_instance.kill()
         return answer
@@ -45,12 +57,14 @@ def test_asynchronous_communication():
 
 def main():
 
-    answer = test_asynchronous_communication()
+    for i in range(10):
 
-    if answer is None:
-        print("Operations batch computed correctly.")
-    else:
-        print("Error detected: {0}".format(answer))
+        answer = test_asynchronous_communication()
+
+        if answer is None:
+            print("{0} -> Operations batch computed correctly.".format(i))
+        else:
+            print("Error detected: {0}".format(answer))
 
 
 if __name__ == "__main__":

@@ -23,9 +23,7 @@ class BufferHandler:
         if len(lines[-1]) > 0:
             self._in_buffer += lines[-1]
 
-        a = list(map(lambda x: x.decode(), lines[:-1]))
-
-        return a
+        return list(map(lambda x: x.decode(), lines[:-1]))
 
     def send(self, channel, data):
         self._out_buffer += data.encode()

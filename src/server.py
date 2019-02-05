@@ -98,6 +98,8 @@ class Server:
                             and ready_to_close:
 
                         buffer_handler.send(connection, "End\n")
+                        tools.manage_message(server_log_fd, verbose, "Server closed.")
+                        server_log_fd.flush()
                         connection.close()
 
     def kill(self):
