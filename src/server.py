@@ -101,6 +101,7 @@ class Server:
                         tools.manage_message(server_log_fd, verbose, "Server closed.")
                         server_log_fd.flush()
                         connection.close()
+                        break
 
     def kill(self):
         """ Kills the process serving. """
