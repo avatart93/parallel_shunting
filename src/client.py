@@ -4,6 +4,7 @@ import os
 import time
 
 from src import tools
+from src import buffer
 
 
 DEFAULT_INPUT_PATH = "../data/src/operations.txt"
@@ -56,19 +57,6 @@ class Client:
 
         self._channel.close()
 
-    def exchange(self, data):
-        """ Sends data to be processed by the server and returns its answer. """
-
-        self._channel.sendall(str(data).encode())
-        answer = self._channel.recv(4096).decode()
-
-        # Log exchange between client and server.
-        if self._log_exchange:
-            tools.manage_message(self._log_fd, self._verbose, "Send -> {0}.".format(data))
-            tools.manage_message(self._log_fd, self._verbose, "Received -> {0}.".format(answer))
-
-        return answer
-
     def process_batch(self, in_path, out_path=None, verbose=True):
         """ Receives a file pointed by 'in_path' containing lines of data and sends each one to the
         server. Can save each answer from the server in a file pointed by 'out_path' if one is given.
@@ -87,24 +75,45 @@ class Client:
         in_fd = open(in_path, 'r')
         out_fd = open(out_path, 'w') if out_path is not None else None
 
-        # If last position didn't changed means we reach EOF.
+        buffer_handler = buffer.BufferHandler()
+
         last_position = None
-        while in_fd.tell() != last_position:
-            last_position = in_fd.tell()
 
-            line = in_fd.readline()  # Read one line at a time to support big files.
+        closed_sent = False
+        while True:
 
-            # Clean it to match regular expressions.
-            line = line.rstrip('\n')
-            line = line.replace(' ', '')
+            # If last position didn't changed means we reach EOF.
+            if in_fd.tell() != last_position:
+                last_position = in_fd.tell()
+                line = in_fd.readline()  # Read one line at a time to support big files.
+            else:
+                line = "End\n"
 
-            if line == '':  # Ignore empty lines if present.
-                continue
+            if line is not None and line.rstrip('\n') == '':  # Ignore empty lines if present.
+                line = None
 
-            answer = self.exchange(line)
+            if line is not None and not closed_sent:
+                buffer_handler.send(self._channel, line)
+                if line == "End\n":
+                    closed_sent = True
 
-            # Show or store results obtained according to the user's preferences.
-            tools.manage_message(out_fd, verbose, answer, False)
+                if self._log_exchange:
+                    tools.manage_message(self._log_fd, self._verbose, "Send -> {0}".format(line))
+
+            answer_lines = buffer_handler.receive(self._channel)
+            for answer_line in answer_lines:
+
+                if answer_line == "End":
+                    break
+
+                # Show or store results obtained according to the user's preferences.
+                tools.manage_message(out_fd, verbose, answer_line, False)
+
+                if self._log_exchange:
+                    tools.manage_message(self._log_fd, self._verbose, "Received -> {0}".format(answer_line))
+
+            if len(answer_lines) > 0 and answer_lines[-1] == "End":
+                break
 
         # Always close file descriptors.
         if out_fd is not None:

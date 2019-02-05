@@ -22,7 +22,7 @@ class ChildrenHandler:
             child.start()
 
     @staticmethod
-    def _child_process(func, pipe, answer_rule="{0}={1}"):
+    def _child_process(func, pipe, answer_rule="{0}={1}\n"):
         """ Child process of the serve that will process all data received through 'func'. """
 
         while True:
@@ -39,6 +39,11 @@ class ChildrenHandler:
 
         return len(self._pipes_for_send) > 0
 
+    def working(self):
+        """ Says if at least one of the children is still working. """
+
+        return len(self._pipes_working) > 0
+
     def can_receive(self):
         """ Says if at least one of the children is waiting to deliver an answer. """
 
@@ -47,14 +52,14 @@ class ChildrenHandler:
     def send(self, data):
         """ Sends 'data' to be processed by one of the idle children. """
 
-        pipe = self._pipes_for_send.pop()
+        pipe = self._pipes_for_send.pop(0)
         pipe.send(data)
         self._pipes_working.append(pipe)
 
     def receive(self):
         """ Receives an answer from one of the children that finished its work. """
 
-        pipe = self._pipes_for_receive.pop()
+        pipe = self._pipes_for_receive.pop(0)
         result = pipe.recv()
         self._pipes_for_send.append(pipe)
         return result

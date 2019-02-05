@@ -21,6 +21,8 @@ def manage_message(logs_fd, verbose, text, timestamp=True):
     """ Writes 'text' to a log if 'log_fd' was provided and prints it out if 'verbose'.
      Also adds a timestamp. """
 
+    text = text.rstrip('\n')
+
     message = text if not timestamp else "{0}: {1}".format(time.asctime(), text)
 
     if logs_fd is not None:

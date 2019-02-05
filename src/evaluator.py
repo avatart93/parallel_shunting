@@ -45,6 +45,9 @@ def shunting_yard(expression_string):
         result = math_func(left_operand, right_operand)
         numbers_stack.append(result)
 
+    # Clean it to match regular expressions.
+    expression_string = expression_string.replace(' ', '')
+
     # Verify the expression.
     if not is_correct_expression(expression_string):
         return "Invalid expression"

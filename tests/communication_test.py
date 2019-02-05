@@ -1,4 +1,6 @@
 
+import os
+
 from src import evaluator
 from src import client
 from src import server
@@ -38,23 +40,7 @@ def test_asynchronous_communication():
     if answer is not None:
         return answer
 
-    logs_fd = open(RESULTS_PATH, 'r')
-    template_fd = open(TEMPLATE_PATH, 'r')
-
-    # If last position didn't changed means we reach EOF.
-    last_position = None
-    while template_fd.tell() != last_position:
-        last_position = template_fd.tell()
-
-        assert template_fd.readline() == logs_fd.readline()
-
-    # Make sure the logs file isn't bigger than the template.
-    logs_fd.readline()
-    assert template_fd.tell() == logs_fd.tell()
-
-    # Always close file descriptors.
-    logs_fd.close()
-    template_fd.close()
+    assert os.stat(RESULTS_PATH).st_size == os.stat(TEMPLATE_PATH).st_size
 
 
 def main():

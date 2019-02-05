@@ -5,6 +5,7 @@ import time
 
 from src import tools
 from src import children
+from src import buffer
 
 
 CONNECTION_LOGS_DIR = "../data/logs/"
@@ -53,7 +54,7 @@ class Server:
         # Create the socket and start listening.
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as channel:
             channel.bind(('127.0.0.1', port))
-            channel.listen(3)
+            channel.listen(1)
 
             while True:
 
@@ -62,31 +63,42 @@ class Server:
 
                 tools.manage_message(server_log_fd, verbose, "Connected by {0}.".format(address))
 
+                buffer_handler = buffer.BufferHandler()
+
+                ready_to_close = False
+                pending = []
                 while True:
                     # Fulfill all the requests until connection is closed by the client.
-                    data = connection.recv(4096).decode()
 
-                    # Client closed connection, logged too.
-                    if not data:
-                        tools.manage_message(server_log_fd, verbose, "{0} closed connection.".format(address))
-                        if server_log_fd is not None:
-                            server_log_fd.flush()
-                        break
+                    pending.extend(buffer_handler.receive(connection))
 
-                    if children_handler.can_send():
-                        children_handler.send(data)
+                    if not ready_to_close and len(pending) > 0 and children_handler.can_send():
+                        data_line = pending.pop(0)
+                        if data_line == "End":
+                            ready_to_close = True
+                            continue
 
-                    # TODO: Achieve asynchronous work.
-                    while not children_handler.can_receive():
-                        children_handler.update_receiving()
+                        children_handler.send(data_line)
 
-                    result = children_handler.receive()
-                    connection.sendall(result.encode())
+                        # Log exchange between client and server.
+                        if log_exchange:
+                            tools.manage_message(server_log_fd, verbose, "Received -> {0}".format(data_line))
 
-                    # Log exchange between client and server.
-                    if log_exchange:
-                        tools.manage_message(server_log_fd, verbose, "Received -> {0}.".format(data))
-                        tools.manage_message(server_log_fd, verbose, "Reply -> {0}.".format(result))
+                    children_handler.update_receiving()
+
+                    if children_handler.can_receive():
+                        result = children_handler.receive()
+
+                        buffer_handler.send(connection, result)
+
+                        if log_exchange:
+                            tools.manage_message(server_log_fd, verbose, "Reply -> {0}".format(result))
+
+                    if len(pending) == 0 and not children_handler.can_receive() and not children_handler.working() \
+                            and ready_to_close:
+
+                        buffer_handler.send(connection, "End\n")
+                        connection.close()
 
     def kill(self):
         """ Kills the process serving. """
