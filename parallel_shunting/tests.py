@@ -37,6 +37,8 @@ def test_asynchronous_communication(in_path, out_path, template_path, logs_path=
     if answer is not None:
         return answer
 
+    time.sleep(1)  # On Linux you have to give some time to the server to get up.
+
     # Establish communication with the server.
     client_instance = client.Client()
     answer = client_instance.open_channel(logs_path=logs_path)
