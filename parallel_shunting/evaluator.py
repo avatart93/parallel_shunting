@@ -1,7 +1,7 @@
 
 import re
 
-from src import operations
+from parallel_shunting import operations
 
 
 OPERATORS_PRECEDENCE = {'+': 0, '-': 0, '*': 1, '/': 1}

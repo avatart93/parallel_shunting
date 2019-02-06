@@ -3,13 +3,8 @@ import socket
 import os
 import time
 
-from src import tools
-from src import buffer
-
-
-DEFAULT_INPUT_PATH = "../data/src/operations.txt"
-DEFAULT_OUTPUT_PATH = "../data/src/results.txt"
-CONNECTION_LOGS_DIR = "../data/logs/"
+from parallel_shunting import tools
+from parallel_shunting import buffer
 
 
 class Client:
@@ -127,25 +122,3 @@ class Client:
         in_fd.close()
         if out_fd is not None:
             out_fd.close()
-
-
-def main():
-
-    # Compute math expressions in operations.txt (default configuration)
-
-    client_instance = Client()
-    client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR)
-
-    answer = client_instance.process_batch(DEFAULT_INPUT_PATH, DEFAULT_OUTPUT_PATH, verbose=False)
-
-    client_instance.close_channel()
-
-    if answer is None:
-        print("Computations finished.")
-    else:
-        print("Error detected: {0}".format(answer))
-
-
-if __name__ == "__main__":
-
-    main()
