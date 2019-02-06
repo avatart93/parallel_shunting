@@ -13,7 +13,7 @@ RESULTS_PATH = "../data/test/communication_tmp.txt"
 TEMPLATE_PATH = "../data/test/communication_out.txt"
 CONNECTION_LOGS_DIR = "../data/logs/"
 
-MAX_DELAYED_SECONDS = 1
+MAX_DELAYED_SECONDS = 0
 
 
 def delayed_shunting_yard(expression):
@@ -31,13 +31,13 @@ def test_asynchronous_communication():
 
     # Serve the shunting yard function.
     server_instance = server.Server()
-    answer = server_instance.launch(delayed_shunting_yard)
+    answer = server_instance.launch(delayed_shunting_yard, logs_path=CONNECTION_LOGS_DIR)
     if answer is not None:
         return answer
 
     # Establish communication with the server.
     client_instance = client.Client()
-    answer = client_instance.open_channel()
+    answer = client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR)
     if answer is not None:
         server_instance.kill()
         return answer
@@ -57,12 +57,12 @@ def test_asynchronous_communication():
 
 def main():
 
-    for i in range(10):
+    for run_index in range(10):
 
         answer = test_asynchronous_communication()
 
         if answer is None:
-            print("{0} -> Operations batch computed correctly.".format(i))
+            print("{0} -> Operations batch computed correctly.".format(run_index + 1))
         else:
             print("Error detected: {0}".format(answer))
 

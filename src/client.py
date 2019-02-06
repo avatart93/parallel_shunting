@@ -77,45 +77,53 @@ class Client:
 
         buffer_handler = buffer.BufferHandler()
 
+        closed_send = False
+        closed_receive = False
+
         last_position = None
 
-        closed_sent = False
         while True:
 
-            # If last position didn't changed means we reach EOF.
+            line = None
+
             if in_fd.tell() != last_position:
                 last_position = in_fd.tell()
                 line = in_fd.readline()  # Read one line at a time to support big files.
-            else:
-                line = "End\n"
 
-            if line is not None and line.rstrip('\n') == '':  # Ignore empty lines if present.
-                line = None
+                # Ignore empty lines if present.
+                if line.rstrip('\n') == '':
+                    line = None
 
-            if line is not None and not closed_sent:
+            elif not closed_send:  # Reach EOF for the first time.
+                buffer_handler.send(self._channel, "End\n")
+                closed_send = True
+
+            # Something to send.
+            if line is not None:
                 buffer_handler.send(self._channel, line)
-                if line == "End\n":
-                    closed_sent = True
 
                 if self._log_exchange:
                     tools.manage_message(self._log_fd, self._verbose, "Send -> {0}".format(line))
 
-            answer_lines = buffer_handler.receive(self._channel)
-            for answer_line in answer_lines:
+            received_lines = buffer_handler.receive(self._channel)
 
-                if answer_line == "End":
+            for received_line in received_lines:
+
+                if received_line == "End":
+                    closed_receive = True
                     break
 
                 # Show or store results obtained according to the user's preferences.
-                tools.manage_message(out_fd, verbose, answer_line, False)
+                tools.manage_message(out_fd, verbose, received_line, False)
 
                 if self._log_exchange:
-                    tools.manage_message(self._log_fd, self._verbose, "Received -> {0}".format(answer_line))
+                    tools.manage_message(self._log_fd, self._verbose, "Received -> {0}".format(received_line))
 
-            if len(answer_lines) > 0 and answer_lines[-1] == "End":
+            if closed_receive:
                 break
 
         # Always close file descriptors.
+        in_fd.close()
         if out_fd is not None:
             out_fd.close()
 

@@ -38,9 +38,9 @@ class Server:
 
     @staticmethod
     def _serve(func, logs_path, verbose, log_exchange, children_count, port=65432):
-        """ This function is launched in a different process and serves the 'func' provided. Any data
-         received by the server will be passed as a parameter to 'func' and the result will be then
-          return to the client. """
+        """ It's ran in a different server process, that will launch 'children' processes to serve
+        'func'. Any data received by this server will be passed as a parameter to an available child
+         process and the result will be then sent back to the client. """
 
         children_handler = children.ChildrenHandler(children_count, func)
 
