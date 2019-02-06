@@ -9,6 +9,5 @@ setup(
     author_email='gilmuher93@gmail.com',
     license='GPLv3',
     packages=['parallel_shunting'],
-    scripts=['scripts/launch_server.py', 'scripts/launch_client.py', 'scripts/launch_client.py'],
-    long_description=open('README.txt').read()
+    scripts=['scripts/launch_server.py', 'scripts/launch_client.py', 'scripts/launch_tests.py']
 )
