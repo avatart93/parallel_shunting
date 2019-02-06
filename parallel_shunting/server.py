@@ -8,9 +8,6 @@ from parallel_shunting import children
 from parallel_shunting import buffer
 
 
-CONNECTION_LOGS_DIR = "../data/logs/"
-
-
 class Server:
     """ This class holds all the functionality required to: receive lines of data from a client, compute
      a function over those lines of data simultaneously and send back the answer. """
@@ -124,8 +121,10 @@ def main():
 
     from parallel_shunting import evaluator
 
+    logs_path = input("Please, provide a directory path to store logs:\n")
+
     server_instance = Server()
-    answer = server_instance.launch(evaluator.shunting_yard, CONNECTION_LOGS_DIR, False)
+    answer = server_instance.launch(evaluator.shunting_yard, logs_path, False)
 
     if answer is None:
         print("Serving -> Function: Shunting Yard, Port: 65432")

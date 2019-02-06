@@ -2,14 +2,13 @@
 import socket
 import os
 import time
+import pkg_resources
 
 from parallel_shunting import tools
 from parallel_shunting import buffer
 
 
-DEFAULT_INPUT_PATH = "../data/scripts/operations.txt"
-DEFAULT_OUTPUT_PATH = "../data/scripts/results.txt"
-CONNECTION_LOGS_DIR = "../data/logs/"
+DEFAULT_INPUT_PATH = pkg_resources.resource_filename('data', "scripts/operations.txt")
 
 
 class Client:
@@ -135,10 +134,13 @@ def main():
 
     # Compute math expressions in operations.txt (default configuration)
 
-    client_instance = Client()
-    client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR)
+    logs_path = input("Please, provide a directory to store the connection log:\n")
+    results_path = input("And now, a file to store the results:\n")
 
-    answer = client_instance.process_batch(DEFAULT_INPUT_PATH, DEFAULT_OUTPUT_PATH, verbose=False)
+    client_instance = Client()
+    client_instance.open_channel(logs_path=logs_path)
+
+    answer = client_instance.process_batch(DEFAULT_INPUT_PATH, os.path.join(results_path, "results.txt"), verbose=False)
 
     client_instance.close_channel()
 

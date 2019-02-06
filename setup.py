@@ -8,7 +8,8 @@ setup(
     author='Dexter',
     author_email='gilmuher93@gmail.com',
     license='GPLv3',
-    packages=['parallel_shunting'],
+    packages=['parallel_shunting', 'data'],
+    package_data={'data': ['scripts/*.txt']},
     entry_points={
         'console_scripts': [
             'psy_tests = parallel_shunting.tests:main',

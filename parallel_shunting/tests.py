@@ -2,6 +2,8 @@
 import os
 import time
 import random
+import pkg_resources
+import tempfile
 
 from parallel_shunting import operations
 from parallel_shunting import evaluator
@@ -9,9 +11,8 @@ from parallel_shunting import client
 from parallel_shunting import server
 
 
-EXPRESSIONS_PATH = "../data/scripts/communication_in.txt"
-RESULTS_PATH = "../data/scripts/communication_tmp.txt"
-TEMPLATE_PATH = "../data/scripts/communication_out.txt"
+EXPRESSIONS_PATH = pkg_resources.resource_filename('data', "scripts/communication_in.txt")
+TEMPLATE_PATH = pkg_resources.resource_filename('data', "scripts/communication_out.txt")
 
 ERROR_THRESHOLD = 1e-3
 MAX_DELAYED_SECONDS = 1
@@ -145,7 +146,10 @@ def main():
 
     for run_index in range(10):
 
-        answer = test_asynchronous_communication(EXPRESSIONS_PATH, RESULTS_PATH, TEMPLATE_PATH)
+        temp_fd, temp_path = tempfile.mkstemp()
+        os.close(temp_fd)
+        answer = test_asynchronous_communication(EXPRESSIONS_PATH, temp_path, TEMPLATE_PATH)
+        os.remove(temp_path)
 
         if answer is None:
             print("{0} -> Operations batch computed correctly.".format(run_index + 1))
