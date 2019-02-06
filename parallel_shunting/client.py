@@ -41,7 +41,10 @@ class Client:
         self._log_exchange = log_exchange
 
         self._channel = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._channel.connect((host, port))
+        try:
+            self._channel.connect((host, port))
+        except ConnectionError:
+            return "Server is down at the moment, please try again later."
 
         tools.manage_message(self._log_fd, self._verbose, "Client started.")
         tools.manage_message(self._log_fd, self._verbose, "Connected to {0} through port {1}.".format(host, port))
@@ -135,10 +138,15 @@ def main():
     # Compute math expressions in operations.txt (default configuration)
 
     logs_path = input("Please, provide a directory to store the connection log:\n")
-    results_path = input("And now, a file to store the results:\n")
+    results_path = input("And now, one to store the results:\n")
 
     client_instance = Client()
-    client_instance.open_channel(logs_path=logs_path)
+    answer = client_instance.open_channel(logs_path=logs_path)
+    if answer is not None:
+        print(answer)
+        return
+
+    print("Processing...")
 
     answer = client_instance.process_batch(DEFAULT_INPUT_PATH, os.path.join(results_path, "results.txt"), verbose=False)
 
