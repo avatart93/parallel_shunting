@@ -84,29 +84,30 @@ class Client:
 
         while True:
 
-            line = None
+            line_to_send = None
 
             if in_fd.tell() != last_position:
                 last_position = in_fd.tell()
-                line = in_fd.readline()  # Read one line at a time to support big files.
+                line_to_send = in_fd.readline()  # Read one line at a time to support big files.
 
                 # Ignore empty lines if present.
-                if line.rstrip('\n') == '':
-                    line = None
+                if line_to_send.rstrip('\n') == '':
+                    line_to_send = None
 
             elif not closed_send:  # Reach EOF for the first time.
                 buffer_handler.send(self._channel, "End\n")
                 closed_send = True
 
             # Something to send.
-            if line is not None:
-                buffer_handler.send(self._channel, line)
+            if line_to_send is not None:
+                buffer_handler.send(self._channel, line_to_send)
 
                 if self._log_exchange:
-                    tools.manage_message(self._log_fd, self._verbose, "Send -> {0}".format(line))
+                    tools.manage_message(self._log_fd, self._verbose, "Send -> {0}".format(line_to_send))
 
             received_lines = buffer_handler.receive(self._channel)
 
+            # Something received.
             for received_line in received_lines:
 
                 if received_line == "End":

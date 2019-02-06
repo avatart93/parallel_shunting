@@ -3,17 +3,21 @@ import os
 import time
 
 
+CONNECTION_LOGS_DIR = "../data/logs/"
+
+
 def verify_dir(path, like='dir', append=''):
     """ Verifies that 'path' points to an existing directory regardless its pointing an existing file
     or not. """
 
+    # Special case when instead of verifying a directory, it is created.
+    if path == CONNECTION_LOGS_DIR and like == 'dir' and not os.path.exists(path):
+        os.makedirs(CONNECTION_LOGS_DIR)
+
     if path is not None:
-
         folder = os.path.split(path)[0] if like is 'file' else path
-
         if not os.path.isdir(folder):
             return "Invalid path."
-
         return path + append
 
 

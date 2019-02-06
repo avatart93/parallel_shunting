@@ -52,56 +52,62 @@ class Server:
         tools.manage_message(server_log_fd, verbose, "Serving function {0}.".format(func.__name__))
 
         # Create the socket and start listening.
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as channel:
-            channel.bind(('127.0.0.1', port))
-            channel.listen(1)
+        channel = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        channel.bind(('127.0.0.1', port))
+        channel.listen(1)
 
+        while True:
+
+            # Accept any connection attempt, only one at a time though.
+            connection, address = channel.accept()
+
+            tools.manage_message(server_log_fd, verbose, "Connected by {0}.".format(address))
+
+            buffer_handler = buffer.BufferHandler()
+
+            closed_receive = False
+            pending_lines = []
+
+            # Process all data lines sent by client.
             while True:
 
-                # Accept any connection attempt, only one at a time though.
-                connection, address = channel.accept()
+                pending_lines.extend(buffer_handler.receive(connection))
 
-                tools.manage_message(server_log_fd, verbose, "Connected by {0}.".format(address))
+                # Something to process can be processed.
+                if len(pending_lines) > 0 and children_handler.can_send():
+                    received_line = pending_lines.pop(0)
 
-                buffer_handler = buffer.BufferHandler()
+                    if received_line == "End":
+                        closed_receive = True
 
-                ready_to_close = False
-                pending = []
-                while True:
-                    # Fulfill all the requests until connection is closed by the client.
-
-                    pending.extend(buffer_handler.receive(connection))
-
-                    if not ready_to_close and len(pending) > 0 and children_handler.can_send():
-                        data_line = pending.pop(0)
-                        if data_line == "End":
-                            ready_to_close = True
-                            continue
-
-                        children_handler.send(data_line)
-
-                        # Log exchange between client and server.
-                        if log_exchange:
-                            tools.manage_message(server_log_fd, verbose, "Received -> {0}".format(data_line))
-
-                    children_handler.update_receiving()
-
-                    if children_handler.can_receive():
-                        result = children_handler.receive()
-
-                        buffer_handler.send(connection, result)
+                    else:
+                        children_handler.send(received_line)
 
                         if log_exchange:
-                            tools.manage_message(server_log_fd, verbose, "Reply -> {0}".format(result))
+                            tools.manage_message(server_log_fd, verbose, "Received -> {0}".format(received_line))
 
-                    if len(pending) == 0 and not children_handler.can_receive() and not children_handler.working() \
-                            and ready_to_close:
+                children_handler.update_receiving()
 
-                        buffer_handler.send(connection, "End\n")
-                        tools.manage_message(server_log_fd, verbose, "Server closed.")
-                        server_log_fd.flush()
-                        connection.close()
-                        break
+                # Something to receive.
+                if children_handler.can_receive():
+                    line_to_send = children_handler.receive()
+
+                    buffer_handler.send(connection, line_to_send)
+
+                    if log_exchange:
+                        tools.manage_message(server_log_fd, verbose, "Reply -> {0}".format(line_to_send))
+
+                # All done.
+                if closed_receive and not children_handler.working() and not children_handler.can_receive():
+
+                    buffer_handler.send(connection, "End\n")
+
+                    tools.manage_message(server_log_fd, verbose, "Requests of {0} fulfilled.".format(address))
+                    server_log_fd.flush()
+
+                    connection.close()
+
+                    break
 
     def kill(self):
         """ Kills the process serving. """
