@@ -9,6 +9,10 @@ from parallel_shunting import client
 from parallel_shunting import server
 
 
+EXPRESSIONS_PATH = "../data/scripts/communication_in.txt"
+RESULTS_PATH = "../data/scripts/communication_tmp.txt"
+TEMPLATE_PATH = "../data/scripts/communication_out.txt"
+
 ERROR_THRESHOLD = 1e-3
 MAX_DELAYED_SECONDS = 1
 
@@ -122,3 +126,35 @@ def test_divide():
     assert operations.divide(0, 2) - 0 < ERROR_THRESHOLD
     assert operations.divide(1, -2) - -0.5 < ERROR_THRESHOLD
     assert operations.divide(4, 3) - 1.333 < ERROR_THRESHOLD
+
+
+def main():
+
+    test_add()
+    test_subtract()
+    test_multiply()
+    test_divide()
+
+    print("All operations tests finished correctly.")
+
+    test_shunting_yard()
+
+    print("All expressions were computed correctly.")
+
+    print("Testing asynchronous work.")
+
+    for run_index in range(10):
+
+        answer = test_asynchronous_communication(EXPRESSIONS_PATH, RESULTS_PATH, TEMPLATE_PATH)
+
+        if answer is None:
+            print("{0} -> Operations batch computed correctly.".format(run_index + 1))
+        else:
+            print("Error detected: {0}".format(answer))
+
+    print("All done.")
+
+
+if __name__ == "__main__":
+
+    main()

@@ -3,6 +3,8 @@ import multiprocessing
 
 
 class ChildrenHandler:
+    """ This class will handle all children processes that run the target function. Will maintain all
+     children organized according with their availability. """
 
     def __init__(self, children_count, func):
 

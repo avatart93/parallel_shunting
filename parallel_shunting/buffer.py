@@ -3,6 +3,8 @@ import select
 
 
 class BufferHandler:
+    """ This class will handle all data transfers over sockets an deal with incomplete transfers or
+     operations that would normally block. """
 
     def __init__(self):
 

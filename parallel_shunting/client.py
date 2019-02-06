@@ -7,7 +7,14 @@ from parallel_shunting import tools
 from parallel_shunting import buffer
 
 
+DEFAULT_INPUT_PATH = "../data/scripts/operations.txt"
+DEFAULT_OUTPUT_PATH = "../data/scripts/results.txt"
+CONNECTION_LOGS_DIR = "../data/logs/"
+
+
 class Client:
+    """ This class holds all the functionality required to: send lines of data from a file to a server,
+     receive the answers and store them in log. """
 
     def __init__(self):
 
@@ -122,3 +129,25 @@ class Client:
         in_fd.close()
         if out_fd is not None:
             out_fd.close()
+
+
+def main():
+
+    # Compute math expressions in operations.txt (default configuration)
+
+    client_instance = Client()
+    client_instance.open_channel(logs_path=CONNECTION_LOGS_DIR)
+
+    answer = client_instance.process_batch(DEFAULT_INPUT_PATH, DEFAULT_OUTPUT_PATH, verbose=False)
+
+    client_instance.close_channel()
+
+    if answer is None:
+        print("Computations finished.")
+    else:
+        print("Error detected: {0}".format(answer))
+
+
+if __name__ == "__main__":
+
+    main()

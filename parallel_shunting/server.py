@@ -8,7 +8,12 @@ from parallel_shunting import children
 from parallel_shunting import buffer
 
 
+CONNECTION_LOGS_DIR = "../data/logs/"
+
+
 class Server:
+    """ This class holds all the functionality required to: receive lines of data from a client, compute
+     a function over those lines of data simultaneously and send back the answer. """
 
     def __init__(self):
 
@@ -111,3 +116,25 @@ class Server:
 
         self._server.terminate()
         self._server.join()  # To give time to the object to update its status.
+
+
+def main():
+
+    # Serve the shunting yard function (default configuration).
+
+    from parallel_shunting import evaluator
+
+    server_instance = Server()
+    answer = server_instance.launch(evaluator.shunting_yard, CONNECTION_LOGS_DIR, False)
+
+    if answer is None:
+        print("Serving -> Function: Shunting Yard, Port: 65432")
+        while True:
+            pass
+    else:
+        print("Error detected: {0}".format(answer))
+
+
+if __name__ == "__main__":
+
+    main()

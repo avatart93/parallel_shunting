@@ -9,5 +9,11 @@ setup(
     author_email='gilmuher93@gmail.com',
     license='GPLv3',
     packages=['parallel_shunting'],
-    scripts=['scripts/launch_server.py', 'scripts/launch_client.py', 'scripts/launch_tests.py']
+    entry_points={
+        'console_scripts': [
+            'psy_tests = parallel_shunting.tests:main',
+            'psy_server = parallel_shunting.server:main',
+            'psy_client = parallel_shunting.client:main'
+        ]
+    }
 )
