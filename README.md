@@ -1,52 +1,108 @@
 # Parallel Shunting Yard
 
-One Paragraph of project description goes here
+This project uses a client-server structure to serve the Shunting Yard algorithm. They communicate through a socket to 
+exchange lines of data, in this case math expressions. The server launches children processes to compute the algorithm 
+over the received expressions. It communicates with its children with the help of pipes.
+
+WARNING: This project can't yet handle client or server unexpected closures.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+You can either download a zip copy of the project from [github](https://github.com/avatart93/parallel_shunting/) or
+directly clone the repository to obtain this project's code:
+
+```
+git clone https://github.com/avatart93/parallel_shunting/
+```
+
+If you want to include the scripts into your system, please check the install section.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+This project was implemented using Python 3.7.2 and its standard packages only, so you wont need to install additional 
+modules.
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+First, access the project's directory:
 
 ```
-Give the example
+cd parallel_shunting
 ```
 
-And repeat
+And type the next command on your console to install the python packages:
 
 ```
-until finished
+python setup.py install
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+This will include the project's packages into your python distribution. It will also add some scripts into your system
+that will allow you to test and deploy this project.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+If you installed the project, you can use one of the commands to test the project from your console, just type:
+
+```
+psy_test
+```
+
+If not, you just have to enter the project's directory:
+
+```
+cd parallel_shunting
+```
+
+and type in your console:
+
+```
+python parallel_shunting/tests.py
+```
+
+If all tests are correct you should see something like this:
+
+```
+All operations tests finished correctly.
+All expressions were computed correctly.
+Testing asynchronous work.
+1 -> Operations batch computed correctly.
+2 -> Operations batch computed correctly.
+3 -> Operations batch computed correctly.
+4 -> Operations batch computed correctly.
+5 -> Operations batch computed correctly.
+6 -> Operations batch computed correctly.
+7 -> Operations batch computed correctly.
+8 -> Operations batch computed correctly.
+9 -> Operations batch computed correctly.
+10 -> Operations batch computed correctly.
+All done.
+```
 
 ### Break down into end to end tests
 
-Explain what these tests test and why
+The test is check if the following features are working properly:
 
-```
-Give an example
-```
+1. Basic math operations.
+2. The shunting yard algorithm.
+3. Client/Server communication with random delay times.
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+Once installed, you can launch the server from your console with:
+
+```
+psy_server
+```
+
+and the client with:
+
+```
+psy_server
+```
+
+WARNING: Remember to launch them in that order.
+
+Both scripts will asked you for some directory paths, read carefully.
 
 ## Built With
 

@@ -98,14 +98,11 @@ class Server:
 
                 # All done.
                 if closed_receive and not children_handler.working() and not children_handler.can_receive():
-
                     buffer_handler.send(connection, "End\n")
 
                     tools.manage_message(server_log_fd, verbose, "Requests of {0} fulfilled.".format(address))
-                    server_log_fd.flush()
 
                     connection.close()
-
                     break
 
     def kill(self):
@@ -121,10 +118,16 @@ def main():
 
     from parallel_shunting import evaluator
 
-    logs_path = input("Please, provide a directory path to store logs:\n")
+    print("Please provide the following parameters. If non are provided, the default values"
+          " will be used.")
+
+    logs_path = input("Directory to store the connection log:\n")
+    if logs_path.rstrip('\n') == '':
+        print("Default (None) will be used.")
+        logs_path = None
 
     server_instance = Server()
-    answer = server_instance.launch(evaluator.shunting_yard, logs_path, False)
+    answer = server_instance.launch(evaluator.shunting_yard, logs_path, True, False)
 
     if answer is None:
         print("Serving -> Function: Shunting Yard, Port: 65432")

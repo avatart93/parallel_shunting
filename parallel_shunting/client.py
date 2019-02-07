@@ -56,7 +56,6 @@ class Client:
 
         # Always close file descriptors.
         if self._log_fd is not None:
-            self._log_fd.flush()
             self._log_fd.close()
 
         self._channel.close()
@@ -137,14 +136,27 @@ def main():
 
     # Compute math expressions in operations.txt (default configuration)
 
-    logs_path = input("Please, provide a directory to store the connection log:\n")
-    results_path = input("And now, one to store the results:\n")
-    data_path = input("Finally, give the path to an operations file, if non is provided the "
-                      "default will be used:\n")
+    print("Please provide the following parameters. If non are provided, the default values"
+          " will be used.")
 
+    logs_path = input("Directory to store the connection log:\n")
+    if logs_path.rstrip('\n') == '':
+        print("Default (None) will be used.")
+        logs_path = None
+
+    data_path = input("Path to an operations file:\n")
     if data_path.rstrip('\n') == '':
-        print("Default will be used.")
+        print("Default (operations.txt) will be used.")
         data_path = DEFAULT_INPUT_PATH
+
+    results_path = input("Directory to store the results:\n")
+    if results_path.rstrip('\n') == '':
+        print("Default (None) will be used.")
+        results_path = None
+        verbose = True
+    else:
+        results_path = os.path.join(results_path, "results.txt")
+        verbose = False
 
     print("Connecting to the server...")
 
@@ -156,7 +168,7 @@ def main():
 
     print("Processing...")
 
-    answer = client_instance.process_batch(data_path, os.path.join(results_path, "results.txt"), verbose=False)
+    answer = client_instance.process_batch(data_path, results_path, verbose)
 
     client_instance.close_channel()
 

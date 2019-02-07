@@ -24,6 +24,7 @@ def manage_message(logs_fd, verbose, text, timestamp=True):
 
     if logs_fd is not None:
         logs_fd.write(message + '\n')
+        logs_fd.flush()
 
     if verbose:
         print(message)
