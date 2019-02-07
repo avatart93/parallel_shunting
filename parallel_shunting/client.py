@@ -139,6 +139,14 @@ def main():
 
     logs_path = input("Please, provide a directory to store the connection log:\n")
     results_path = input("And now, one to store the results:\n")
+    data_path = input("Finally, give the path to an operations file, if non is provided the "
+                      "default will be used:\n")
+
+    if data_path.rstrip('\n') == '':
+        print("Default will be used.")
+        data_path = DEFAULT_INPUT_PATH
+
+    print("Connecting to the server...")
 
     client_instance = Client()
     answer = client_instance.open_channel(logs_path=logs_path)
@@ -148,7 +156,7 @@ def main():
 
     print("Processing...")
 
-    answer = client_instance.process_batch(DEFAULT_INPUT_PATH, os.path.join(results_path, "results.txt"), verbose=False)
+    answer = client_instance.process_batch(data_path, os.path.join(results_path, "results.txt"), verbose=False)
 
     client_instance.close_channel()
 
