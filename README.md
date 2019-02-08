@@ -100,11 +100,11 @@ and the client with:
 psy_client
 ```
 
-WARNING: Remember to launch them in that order.
+Both scripts will ask you for some directory paths, read carefully and remember that server's processes work in 
+parallel so the results you obtain may be unordered. 
 
-Both scripts will ask you for some directory paths, read carefully.
-
-Note: Files with more than 300000 operations can take a couple of minutes to be processed.
+WARNING: This project hasn't been enhanced by tools such as cython or numba, so files with more than 300000 operations
+can take a couple of minutes to be processed.
 
 ## Built With
 
