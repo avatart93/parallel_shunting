@@ -97,12 +97,14 @@ psy_server
 and the client with:
 
 ```
-psy_server
+psy_client
 ```
 
 WARNING: Remember to launch them in that order.
 
 Both scripts will ask you for some directory paths, read carefully.
+
+Note: Files with more than 300000 operations can take a couple of minutes to be processed.
 
 ## Built With
 
