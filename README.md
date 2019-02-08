@@ -102,7 +102,7 @@ psy_server
 
 WARNING: Remember to launch them in that order.
 
-Both scripts will asked you for some directory paths, read carefully.
+Both scripts will ask you for some directory paths, read carefully.
 
 ## Built With
 
